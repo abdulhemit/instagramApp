@@ -1,49 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="?attr/actionBarSize">
+  >
 
-    <TextView
-        android:id="@+id/textview"
+    <FrameLayout
+        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/id_appbar_MainActivity"
-        android:layout_alignParentTop="true"
-        android:gravity="center"
-        android:layout_centerVertical="true"
-        android:text=""
-        android:textSize="20sp" />
+        android:layout_height="match_parent"
+        android:layout_above="@id/bottomNavigationLayout"
 
+        />
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/id_appbar_MainActivity"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="@color/white"
+   <androidx.constraintlayout.widget.ConstraintLayout
+       android:id="@+id/bottomNavigationLayout"
+       android:layout_width="match_parent"
+       android:layout_height="80dp"
+       android:layout_alignParentBottom="true"
+       android:layout_alignParentStart="true"
+       android:layout_alignParentEnd="true"
+       android:background="@color/white"
+       >
 
-        >
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/id_toolbar_MainActivity"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginRight="15dp"
-            android:background="@color/white"
+       <com.google.android.material.bottomnavigation.BottomNavigationView
+           android:id="@+id/nav_view"
+           android:layout_width="match_parent"
+           android:layout_height="match_parent"
+           android:background="#F4F6F7 "
+           app:menu="@menu/bottom_nav_menu"
+           android:paddingBottom="25dp"
+           app:labelVisibilityMode="unlabeled"/>
 
-            >
-            <com.google.android.material.bottomnavigation.BottomNavigationView
-                android:id="@+id/nav_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                app:menu="@menu/bottom_nav_menu"
-                app:labelVisibilityMode="unlabeled"/>
-        </androidx.appcompat.widget.Toolbar>
-
-    </com.google.android.material.appbar.AppBarLayout>
+   </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </RelativeLayout>

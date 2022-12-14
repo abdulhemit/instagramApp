@@ -1,18 +1,20 @@
 package com.example.instagramapp
 
 import android.os.Bundle
-import android.widget.TextView
+
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
+import androidx.fragment.app.Fragment
 import com.example.instagramapp.databinding.ActivityMainBinding
+import com.example.instagramapp.fragments.HomeFragment
+import com.example.instagramapp.fragments.NotificationFragment
+import com.example.instagramapp.fragments.ProfileFragment
+import com.example.instagramapp.fragments.SearchFragment
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    internal var selectedFragment : Fragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,30 +24,37 @@ class MainActivity : AppCompatActivity() {
 
         val navView: BottomNavigationView = binding.navView
         navView.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener)
+
+
+        supportFragmentManager.beginTransaction().replace(R.id.fragment_container,HomeFragment()).commit()
     }
 
     private val onNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.nav_home -> {
-                binding.textview.setText("Home")
-                return@OnNavigationItemSelectedListener true
+
+                selectedFragment = HomeFragment()
             }
             R.id.nav_search -> {
-                binding.textview.setText("Search")
-                return@OnNavigationItemSelectedListener true
+
+                selectedFragment = SearchFragment()
             }
             R.id.nav_add_post -> {
-                binding.textview.setText("Add")
+
                 return@OnNavigationItemSelectedListener true
             }
             R.id.nav_notifications -> {
-                binding.textview.setText("Notifications")
-                return@OnNavigationItemSelectedListener true
+
+                selectedFragment = NotificationFragment()
             }
             R.id.nav_profile -> {
-                binding.textview.setText("Profile")
-                return@OnNavigationItemSelectedListener true
+
+                selectedFragment = ProfileFragment()
             }
+        }
+        if(selectedFragment != null){
+            supportFragmentManager.beginTransaction().replace(R.id.fragment_container,selectedFragment!!).commit()
+
         }
 
         false
