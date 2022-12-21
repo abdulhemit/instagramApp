@@ -41,6 +41,7 @@
                         android:src="@drawable/search"
                         />
                     <EditText
+                        android:id="@+id/searchEditTExt"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         app:layout_constraintStart_toEndOf="@id/id_searchIcon_SearchFragment"
@@ -59,6 +60,7 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/id_recyclerview_SearchFragment"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/id_cardview_SearchFragment"
