@@ -92,7 +92,7 @@ class SearchFragment : Fragment() {
     }
 
     private fun searchUser(input: String) {
-      val query = FirebaseDatabase.getInstance().reference
+        val query = FirebaseDatabase.getInstance().reference
           .child("users")
           .orderByChild("fullName")
           .startAt(input)
@@ -108,15 +108,12 @@ class SearchFragment : Fragment() {
                         userList.add(user)
                     }
                 }
-
                 userAdapter.notifyDataSetChanged()
 
             }
-
             override fun onCancelled(error: DatabaseError) {
 
             }
-
         })
 
     }

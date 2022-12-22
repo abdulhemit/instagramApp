@@ -22,6 +22,7 @@
                 android:layout_height="match_parent"
                 >
                 <TextView
+                    android:id="@+id/userName_fragmentProfile"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="user_name"
@@ -67,7 +68,7 @@
 
 
                 <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/pro_imaage_profile_frags"
+                    android:id="@+id/userImage_fragmentProfile"
                     android:layout_width="120dp"
                     android:layout_height="120dp"
                     android:src="@drawable/profile"
@@ -185,7 +186,7 @@
                 android:padding="12dp"
                 >
                 <TextView
-                    android:id="@+id/full_Name_profile_frag"
+                    android:id="@+id/userFullName_fragmentProfile"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Full Name "
@@ -193,11 +194,12 @@
                     android:textStyle="bold"
                     />
                 <TextView
-                    android:id="@+id/bio_profile_frag"
+                    android:id="@+id/userBio_fragmentProfile"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Bio"
                     android:textStyle="bold"
+                    android:layout_marginTop="6dp"
                     android:textSize="13sp"
                     />
             </LinearLayout>

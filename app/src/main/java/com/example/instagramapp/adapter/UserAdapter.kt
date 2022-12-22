@@ -1,10 +1,14 @@
 package com.example.instagramapp.adapter
 
+import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.instagramapp.R
 import com.example.instagramapp.databinding.UserItemBinding
+import com.example.instagramapp.fragments.ProfileFragment
 import com.example.instagramapp.model.User
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
@@ -33,6 +37,17 @@ class UserAdapter (var mUser: List<User>, var isFragment : Boolean = false): Rec
         Picasso.get().load(mUser.get(position).image).placeholder(R.drawable.profile).into(holder.binding.userImageSearchItem)
 
         checkFollowingStatus(user.uid,holder.binding.followBtnSearch)
+
+        holder.itemView.setOnClickListener(View.OnClickListener {
+            val pref = holder.itemView.context.getSharedPreferences("PREFS", Context.MODE_PRIVATE).edit()
+            pref.putString("profileId",user.uid)
+            pref.apply()
+
+            (holder.itemView.context as FragmentActivity).supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container,ProfileFragment()).commit()
+
+        })
+
 
         holder.binding.followBtnSearch.setOnClickListener {
             if (holder.binding.followBtnSearch.text.toString() == "Follow"){
