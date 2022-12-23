@@ -83,6 +83,13 @@ class SignUpActivity : AppCompatActivity() {
             if (it.isSuccessful){
                 progressDialog.dismiss()
                 Toast.makeText(this,"Account has been created Successfully",Toast.LENGTH_LONG).show()
+
+                FirebaseDatabase.getInstance().reference
+                    .child("Follow").child(currentUserId)
+                    .child("Following").child(currentUserId)
+                    .setValue(true)
+
+
                 startActivity(Intent(this@SignUpActivity,MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK))
                 finish()
             }else{

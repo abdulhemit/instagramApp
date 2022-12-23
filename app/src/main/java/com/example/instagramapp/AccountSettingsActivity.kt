@@ -1,4 +1,4 @@
-package com.example.instagramapp.fragments
+package com.example.instagramapp
 
 import android.Manifest
 import android.app.ProgressDialog
@@ -15,9 +15,6 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.instagramapp.MainActivity
-import com.example.instagramapp.R
-import com.example.instagramapp.SingInActivity
 import com.example.instagramapp.databinding.ActivityAccountSettingsBinding
 import com.example.instagramapp.model.User
 import com.google.android.gms.tasks.Continuation
@@ -191,14 +188,14 @@ class AccountSettingsActivity : AppCompatActivity() {
 
     private fun uploadImageAndUpdateInfo() {
 
-
         when {
 
             TextUtils.isEmpty(selectedPicture.toString()) -> {
                 Toast.makeText(this,"Please select image first", Toast.LENGTH_LONG).show()
-            } TextUtils.isEmpty(binding.editFullName.text.toString()) -> {
-            Toast.makeText(this,"Please write fullName first", Toast.LENGTH_LONG).show()
-        }
+            }
+            TextUtils.isEmpty(binding.editFullName.text.toString()) -> {
+                Toast.makeText(this,"Please write fullName first", Toast.LENGTH_LONG).show()
+            }
             TextUtils.isEmpty(binding.editUserName.text.toString()) -> {
                 Toast.makeText(this,"Please write userName first", Toast.LENGTH_LONG).show()
             }

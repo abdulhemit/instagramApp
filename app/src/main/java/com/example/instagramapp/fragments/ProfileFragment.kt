@@ -7,7 +7,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.instagramapp.R
+import com.example.instagramapp.AccountSettingsActivity
+import com.example.instagramapp.SingInActivity
 import com.example.instagramapp.databinding.FragmentProfileBinding
 import com.example.instagramapp.model.User
 import com.google.firebase.auth.FirebaseAuth
@@ -41,6 +42,10 @@ class ProfileFragment : Fragment() {
         val view = binding.root
        // binding.editProfileBtn.setOnClickListener { startActivity(Intent(requireContext(),AccountSettingsActivity::class.java)) }
 
+        if ( FirebaseAuth.getInstance().currentUser == null){
+            Intent(requireContext(), SingInActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+
+        }
         firebaseUser = FirebaseAuth.getInstance().currentUser!!
         firebaseDatabase = FirebaseDatabase.getInstance()
         val pref =  this.context?.getSharedPreferences("PREFS", Context.MODE_PRIVATE)
@@ -64,7 +69,8 @@ class ProfileFragment : Fragment() {
             //startActivity(Intent(requireContext(),AccountSettingsActivity::class.java))
             val getButtonText = binding.editProfileBtn.text.toString()
             when {
-                getButtonText == "Edit Profile" -> startActivity(Intent(requireContext(),AccountSettingsActivity::class.java))
+                getButtonText == "Edit Profile" -> startActivity(Intent(requireContext(),
+                    AccountSettingsActivity::class.java))
 
                 // kullaniciyi takip etmek icin follow and following button click
                 getButtonText == "Follow" -> {
