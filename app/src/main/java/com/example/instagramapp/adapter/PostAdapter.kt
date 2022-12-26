@@ -1,11 +1,13 @@
 package com.example.instagramapp.adapter
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.instagramapp.CommentsActivity
 import com.example.instagramapp.R
 import com.example.instagramapp.databinding.PostLayoutBinding
 import com.example.instagramapp.model.Post
@@ -42,11 +44,30 @@ class PostAdapter(val mPostList:List<Post>):RecyclerView.Adapter<PostAdapter.Pos
                 it
             )
         }
+        holder.binding.postImageCommentBtn.setOnClickListener {
+            val intent = Intent(holder.itemView.context,CommentsActivity::class.java)
+            intent.putExtra("postId",post.postId)
+            intent.putExtra("publisherId",post.publisher)
+            holder.itemView.context.startActivity(intent)
+        }
+
+        holder.binding.comments.setOnClickListener {
+            val intent = Intent(holder.itemView.context,CommentsActivity::class.java)
+            intent.putExtra("postId",post.postId)
+            intent.putExtra("publisherId",post.publisher)
+            holder.itemView.context.startActivity(intent)
+        }
+
+
+
         // kullanici paylasan resimleri begenmek
         isLikes(post.postId,holder.binding.postImageLikeBtn)
 
         // bullanicinin paylasilan resminin begeni sayisi
         numberOfLikes(post.postId,holder.binding.likes)
+
+        // comment sayisini getirmek
+        getTotalComments(post.postId,holder.binding.comments)
 
 
         holder.binding.postImageLikeBtn.setOnClickListener {
@@ -84,7 +105,7 @@ class PostAdapter(val mPostList:List<Post>):RecyclerView.Adapter<PostAdapter.Pos
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()){
 
-                    likes.text = snapshot.childrenCount.toString() + "Likes"
+                    likes.text = snapshot.childrenCount.toString() + " Likes"
                 }
 
             }
@@ -95,6 +116,31 @@ class PostAdapter(val mPostList:List<Post>):RecyclerView.Adapter<PostAdapter.Pos
         })
 
     }
+
+    private fun getTotalComments(postId: String?, comments: TextView) {
+
+        val LikesRef =  FirebaseDatabase.getInstance()
+            .reference
+            .child("Comments")
+            .child(postId!!)
+
+        LikesRef.addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()){
+
+                    comments.text = "View all " + snapshot.childrenCount.toString() + " Comments"
+                }
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+
+        })
+
+    }
+
+
 
     private fun isLikes(postId: String?, postImageLikeBtn: ImageView) {
 
@@ -129,6 +175,7 @@ class PostAdapter(val mPostList:List<Post>):RecyclerView.Adapter<PostAdapter.Pos
     override fun getItemCount(): Int {
         return mPostList.size
     }
+
     private fun publisherInfo(
         profileImage: CircleImageView,
         userName: TextView,
