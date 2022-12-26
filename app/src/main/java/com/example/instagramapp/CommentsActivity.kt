@@ -3,7 +3,10 @@ package com.example.instagramapp
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.instagramapp.adapter.CommentAdapter
 import com.example.instagramapp.databinding.ActivityCommentsBinding
+import com.example.instagramapp.model.Comment
 import com.example.instagramapp.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -19,6 +22,9 @@ class CommentsActivity : AppCompatActivity() {
     private lateinit var publisher: String
     private lateinit var firebaseUser: FirebaseUser
     private lateinit var firebaseDatabase: FirebaseDatabase
+    private lateinit var commentAdapter: CommentAdapter
+    private lateinit var commentList: MutableList<Comment>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCommentsBinding.inflate(layoutInflater)
@@ -27,7 +33,15 @@ class CommentsActivity : AppCompatActivity() {
 
         firebaseUser = FirebaseAuth.getInstance().currentUser!!
         firebaseDatabase = FirebaseDatabase.getInstance()
-        getUserInfo()
+
+
+        commentList = ArrayList()
+        commentAdapter = CommentAdapter(commentList)
+        val linearLayoutManager = LinearLayoutManager(this)
+        linearLayoutManager.reverseLayout = true
+        binding.recyclerviewCommentActivity.layoutManager = linearLayoutManager
+        binding.recyclerviewCommentActivity.adapter = commentAdapter
+
 
         val intent = intent
         postId = intent.getStringExtra("postId").toString()
@@ -43,6 +57,9 @@ class CommentsActivity : AppCompatActivity() {
                addComment()
            }
        }
+        getUserInfo()
+        readComments()
+        getPostImage()
 
     }
 
@@ -84,5 +101,58 @@ class CommentsActivity : AppCompatActivity() {
             }
 
         })
+    }
+    private fun getPostImage(){
+
+        val postImageRaf = firebaseDatabase.reference.child("Post")
+            .child(postId)
+            .child("postImage")
+
+
+        postImageRaf.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+
+
+                if (snapshot.exists()){
+                    val postImage = snapshot.value.toString()
+                    postImage.let {
+
+                        Picasso.get().load(postImage).into(binding.postImageCommentActivity)
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+        })
+    }
+
+
+    private fun readComments(){
+
+        val commentReg = firebaseDatabase.reference
+            .child("Comments")
+            .child(postId)
+
+        commentReg.addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists())
+                {
+                    commentList.clear()
+                    for(snap in snapshot.children){
+                        val comments = snap.getValue(Comment::class.java)
+                        commentList.add(comments!!)
+                    }
+                    commentAdapter.notifyDataSetChanged()
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+
+        })
+
     }
 }
