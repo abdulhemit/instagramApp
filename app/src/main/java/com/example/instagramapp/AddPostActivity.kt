@@ -104,10 +104,10 @@ class AddPostActivity : AppCompatActivity() {
                         val postId = postRef.push().key
 
                         val postMap = HashMap<String,Any>()
-                        postMap["fullName"] = postId!!
+                        postMap["postId"] = postId!!
                         postMap["discription"] = binding.discriptionPost.text.toString().toLowerCase()
                         postMap["publisher"] = FirebaseAuth.getInstance().currentUser!!.uid
-                        postMap["image"] = myUri
+                        postMap["postImage"] = myUri
 
                         postRef.child(postId).updateChildren(postMap)
 
