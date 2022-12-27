@@ -7,9 +7,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.instagramapp.AccountSettingsActivity
 import com.example.instagramapp.SingInActivity
+import com.example.instagramapp.adapter.MyPhotosAdapter
 import com.example.instagramapp.databinding.FragmentProfileBinding
+import com.example.instagramapp.model.Post
 import com.example.instagramapp.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -18,6 +22,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.squareup.picasso.Picasso
+import java.util.Collections
 
 
 class ProfileFragment : Fragment() {
@@ -27,6 +32,8 @@ class ProfileFragment : Fragment() {
     private lateinit var profileId : String
     private lateinit var firebaseUser : FirebaseUser
     private lateinit var firebaseDatabase : FirebaseDatabase
+    private lateinit var myPhotosList: List<Post>
+    private lateinit var myPhotosAdapter: MyPhotosAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +47,16 @@ class ProfileFragment : Fragment() {
     ): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         val view = binding.root
-       // binding.editProfileBtn.setOnClickListener { startActivity(Intent(requireContext(),AccountSettingsActivity::class.java)) }
+       // Recycilirview my Post Photos
+        val linearLayoutManager : LinearLayoutManager = GridLayoutManager(requireContext(),3)
+        binding.recyclerviewMyPhotosPost.layoutManager = linearLayoutManager
+        binding.recyclerviewMyPhotosPost.setHasFixedSize(true)
+        binding.recyclerviewMyPhotosPost.visibility = View.VISIBLE
+        myPhotosList = ArrayList()
+        myPhotosAdapter = MyPhotosAdapter(myPhotosList)
+        binding.recyclerviewMyPhotosPost.adapter = myPhotosAdapter
+
+
 
         if ( FirebaseAuth.getInstance().currentUser == null){
             Intent(requireContext(), SingInActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -114,7 +130,39 @@ class ProfileFragment : Fragment() {
         getFollowing()
         getFollowers()
         getUserInfo()
+        myPhotos()
         return view
+    }
+
+
+    // get myPostPhotos
+    private fun myPhotos(){
+
+        val  myPhotoRef = firebaseDatabase.reference.child("Post")
+        myPhotoRef.addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()){
+                    (myPhotosList as ArrayList<Post>).clear()
+
+                    for (snap in snapshot.children){
+
+                        val post = snap.getValue(Post::class.java)!!
+                        if (post.publisher == profileId){
+
+                            (myPhotosList as ArrayList<Post>).add(post)
+                        }
+                        Collections.reverse(myPhotosList)
+                    }
+                    myPhotosAdapter.notifyDataSetChanged()
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+
+        })
+
+
     }
 
     private fun checkFollowAndFollowingButtonStatus() {
