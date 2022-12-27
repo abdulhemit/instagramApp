@@ -32,9 +32,25 @@ class PostAdapter(val mPostList:List<Post>):RecyclerView.Adapter<PostAdapter.Pos
     }
 
     override fun onBindViewHolder(holder: PostHolder, position: Int) {
-        firebaseUser = FirebaseAuth.getInstance().currentUser!!
 
+        firebaseUser = FirebaseAuth.getInstance().currentUser!!
         val post = mPostList[position]
+
+
+        // kullanici paylasan resimleri begenmek
+        isLikes(post.postId,holder.binding.postImageLikeBtn)
+
+        // bullanicinin paylasilan resminin begeni sayisi
+        numberOfLikes(post.postId,holder.binding.likes)
+
+        // comment sayisini getirmek
+        getTotalComments(post.postId,holder.binding.comments)
+
+        // paylasilan resimin begeni kontrolu
+        checkSavesStatus(post.postId,holder.binding.postSaveCommentBtn)
+
+
+
 
         Picasso.get().load(post.postImage).placeholder(R.drawable.select).into(holder.binding.postImageHome)
         holder.binding.description.setText(post.discription)
@@ -44,6 +60,7 @@ class PostAdapter(val mPostList:List<Post>):RecyclerView.Adapter<PostAdapter.Pos
                 it
             )
         }
+
         holder.binding.postImageCommentBtn.setOnClickListener {
             val intent = Intent(holder.itemView.context,CommentsActivity::class.java)
             intent.putExtra("postId",post.postId)
@@ -57,17 +74,6 @@ class PostAdapter(val mPostList:List<Post>):RecyclerView.Adapter<PostAdapter.Pos
             intent.putExtra("publisherId",post.publisher)
             holder.itemView.context.startActivity(intent)
         }
-
-
-
-        // kullanici paylasan resimleri begenmek
-        isLikes(post.postId,holder.binding.postImageLikeBtn)
-
-        // bullanicinin paylasilan resminin begeni sayisi
-        numberOfLikes(post.postId,holder.binding.likes)
-
-        // comment sayisini getirmek
-        getTotalComments(post.postId,holder.binding.comments)
 
 
         holder.binding.postImageLikeBtn.setOnClickListener {
@@ -89,8 +95,56 @@ class PostAdapter(val mPostList:List<Post>):RecyclerView.Adapter<PostAdapter.Pos
                 holder.binding.likes.visibility = View.GONE
             }
 
-
         }
+        holder.binding.postSaveCommentBtn.setOnClickListener {
+
+            if (holder.binding.postSaveCommentBtn.tag == "Save"){
+
+                FirebaseDatabase.getInstance().reference.
+                child("Saves")
+                    .child(firebaseUser.uid)
+                    .child(post.postId!!)
+                    .setValue(true)
+
+            }else{
+
+                FirebaseDatabase.getInstance().reference
+                    .child("Saves")
+                    .child(firebaseUser.uid)
+                    .child(post.postId!!)
+                    .removeValue()
+
+            }
+        }
+    }
+
+    private fun checkSavesStatus(postId: String?, postImageSaveBtn: ImageView) {
+
+        val savesRef = FirebaseDatabase.getInstance().reference
+            .child("Saves")
+            .child(firebaseUser.uid)
+
+        savesRef.addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.child(postId!!).exists()){
+
+                    postImageSaveBtn.setImageResource(R.drawable.save_large_icon)
+                    postImageSaveBtn.tag = "Saved"
+
+                } else {
+
+                    postImageSaveBtn.setImageResource(R.drawable.save_unfilled_large_icon)
+                    postImageSaveBtn.tag = "Save"
+
+                }
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+
+        })
+
     }
 
 

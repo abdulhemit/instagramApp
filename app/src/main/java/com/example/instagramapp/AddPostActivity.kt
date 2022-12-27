@@ -16,6 +16,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.instagramapp.databinding.ActivityAccountSettingsBinding
 import com.example.instagramapp.databinding.ActivityAddPostBinding
+import com.example.instagramapp.fragments.HomeFragment
 import com.google.android.gms.tasks.Continuation
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
@@ -45,7 +46,30 @@ class AddPostActivity : AppCompatActivity() {
         storage = Firebase.storage
         registerLauncher()
 
-        binding.saveNewPostAddPostActivity.setOnClickListener { uploadImage() }
+
+        binding.saveNewPostAddPostActivity.setOnClickListener {
+            if (selectedPicture != null){
+                uploadImage()
+            }else{
+
+                Toast.makeText(this,"Please select a image",Toast.LENGTH_LONG).show()
+
+            }
+
+        }
+        binding.newImageAddPostActivity.setOnClickListener {
+            // permission granted
+            val intentToGallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            // start activity for result
+            activityResultLauncher.launch(intentToGallery)
+        }
+        binding.closeImageBtnAddPostActivity.setOnClickListener {
+
+            val intent = Intent(this,MainActivity::class.java)
+            startActivity(intent)
+            finish()
+
+        }
 
 
 

@@ -131,6 +131,7 @@ class ProfileFragment : Fragment() {
         getFollowers()
         getUserInfo()
         myPhotos()
+        getTotalNumberOfPost()
         return view
     }
 
@@ -286,6 +287,33 @@ class ProfileFragment : Fragment() {
         val pref = context?.getSharedPreferences("PREFS", Context.MODE_PRIVATE)?.edit()
         pref?.putString("profileId",firebaseUser.uid)
         pref?.apply()
+    }
+
+    // paylasilan resim sayisini getirmek
+    private fun getTotalNumberOfPost(){
+
+        val postRef = FirebaseDatabase.getInstance().reference.child("Post")
+
+        postRef.addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()){
+                    var numberCounter = 0
+
+                    for (snap in snapshot.children){
+
+                        val post = snap.getValue(Post::class.java)!!
+                        if (post.publisher == profileId){
+                            numberCounter++
+                        }
+                    }
+                    binding.profilePostId.text  = " " + numberCounter
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+
+        })
     }
 
 
