@@ -1,5 +1,6 @@
 package com.example.instagramapp.fragments
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -21,6 +22,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.getValue
 import com.squareup.picasso.Picasso
 import java.util.Collections
 
@@ -35,6 +37,11 @@ class ProfileFragment : Fragment() {
     private lateinit var myPhotosList: List<Post>
     private lateinit var myPhotosAdapter: MyPhotosAdapter
 
+    private lateinit var myPhotosListSaved: List<Post>
+    private lateinit var myPhotosAdapterSaved: MyPhotosAdapter
+    private lateinit var mySavesImg: List<String>
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -47,14 +54,38 @@ class ProfileFragment : Fragment() {
     ): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         val view = binding.root
+
+        binding.recyclerviewMyPhotosPost.visibility = View.VISIBLE
+        binding.recyclerviewMyPhotosSaved.visibility = View.GONE
+
+        binding.imagesGridViewBtn.setOnClickListener {
+            binding.recyclerviewMyPhotosPost.visibility = View.VISIBLE
+            binding.recyclerviewMyPhotosSaved.visibility = View.GONE
+        }
+
+        binding.imagesSaveBtn.setOnClickListener {
+            binding.recyclerviewMyPhotosSaved.visibility = View.VISIBLE
+            binding.recyclerviewMyPhotosPost.visibility = View.GONE
+
+        }
+
+
        // Recycilirview my Post Photos
         val linearLayoutManager : LinearLayoutManager = GridLayoutManager(requireContext(),3)
         binding.recyclerviewMyPhotosPost.layoutManager = linearLayoutManager
         binding.recyclerviewMyPhotosPost.setHasFixedSize(true)
-        binding.recyclerviewMyPhotosPost.visibility = View.VISIBLE
         myPhotosList = ArrayList()
         myPhotosAdapter = MyPhotosAdapter(myPhotosList)
         binding.recyclerviewMyPhotosPost.adapter = myPhotosAdapter
+
+
+        // Recycilirview my Saved Photos
+        val linearLayoutManager2 : LinearLayoutManager = GridLayoutManager(requireContext(),3)
+        binding.recyclerviewMyPhotosSaved.layoutManager = linearLayoutManager2
+        binding.recyclerviewMyPhotosSaved.setHasFixedSize(true)
+        myPhotosListSaved = ArrayList()
+        myPhotosAdapterSaved = MyPhotosAdapter(myPhotosListSaved)
+        binding.recyclerviewMyPhotosSaved.adapter = myPhotosAdapterSaved
 
 
 
@@ -132,6 +163,7 @@ class ProfileFragment : Fragment() {
         getUserInfo()
         myPhotos()
         getTotalNumberOfPost()
+        mySaves()
         return view
     }
 
@@ -141,6 +173,7 @@ class ProfileFragment : Fragment() {
 
         val  myPhotoRef = firebaseDatabase.reference.child("Post")
         myPhotoRef.addValueEventListener(object : ValueEventListener{
+            @SuppressLint("NotifyDataSetChanged")
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()){
                     (myPhotosList as ArrayList<Post>).clear()
@@ -314,6 +347,74 @@ class ProfileFragment : Fragment() {
             }
 
         })
+    }
+    private fun mySaves(){
+
+        mySavesImg = ArrayList()
+
+        val savedRef = FirebaseDatabase.getInstance().reference
+            .child("Saves")
+            .child(firebaseUser.uid)
+
+        savedRef.addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()){
+
+                    for (snap in snapshot.children){
+                        (mySavesImg as ArrayList<String>).add(snap.key.toString())
+                    }
+                    readSavedImagesData()
+
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+
+        })
+    }
+
+    // kaydedilen resimleri cekmek
+    private fun readSavedImagesData(){
+
+        val postRef = FirebaseDatabase.getInstance().reference
+            .child("Post")
+
+
+        postRef.addValueEventListener(object : ValueEventListener{
+            @SuppressLint("NotifyDataSetChanged")
+            override fun onDataChange(snapshot: DataSnapshot) {
+
+                if (snapshot.exists()){
+
+                    (myPhotosListSaved as ArrayList<Post>).clear()
+
+                    for(snap in snapshot.children){
+
+                        val post = snap.getValue(Post::class.java)
+
+                        for (key in mySavesImg){
+
+                            if (post!!.postId == key){
+
+                                (myPhotosListSaved as ArrayList<Post>).add(post)
+
+                            }
+
+                        }
+                    }
+                    myPhotosAdapterSaved.notifyDataSetChanged()
+                }
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+        })
+
+
     }
 
 
