@@ -104,6 +104,8 @@ class CommentsActivity : AppCompatActivity() {
     }
     private fun getPostImage(){
 
+
+
         val postImageRaf = firebaseDatabase.reference.child("Post")
             .child(postId)
             .child("postImage")

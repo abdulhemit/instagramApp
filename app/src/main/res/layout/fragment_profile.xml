@@ -157,7 +157,7 @@
                     <androidx.cardview.widget.CardView
                         android:layout_width="165dp"
                         android:layout_height="30dp"
-                        android:layout_gravity="center"
+
                         android:layout_marginTop="6dp"
                         app:cardCornerRadius="14dp"
                         android:backgroundTint="#D7DBDD"
